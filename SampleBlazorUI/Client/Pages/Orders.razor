@@ -1,0 +1,88 @@
+﻿@page "/orders"
+@inject HttpClient HttpClient
+@using SampleBlazorUI.Shared
+
+<h1>Orders</h1>
+
+@if (MyOrders == null) {
+	<span>Loading...</span>
+} else {
+
+	<table>
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Customer</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var order in MyOrders)
+			{
+				<tr>
+					<td>@order.Id</td>
+					<td>@order.CustomerName</td>
+					<td><button @onclick="() => GetDetails(order.Id)">Details</button></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+@if (Items != null && Items.Any()) {
+
+	<h2>Line Items</h2>
+
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Price USD</th>
+				<th>Qty</th>
+				<th>Total</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Items)
+			{
+				<tr>
+					<td>@item.Product</td>
+					<td>@item.PriceUSD.ToString("$0.00")</td>
+					<td>@item.Quantity</td>
+					<td>@item.TotalPrice.ToString("$0.00")</td>
+				</tr>
+			}
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="3"></td>
+				<td>@Items.Sum(i => i.TotalPrice).ToString("$0.00")</td>
+			</tr>
+		</tfoot>
+	</table>
+
+} 
+
+}
+
+
+
+@code {
+
+	Order[] MyOrders { get; set; }
+
+	OrderItem[] Items { get; set; }
+
+	protected override async Task OnInitializedAsync()  {
+
+		MyOrders = await HttpClient.GetJsonAsync<Order[]>("/api/orders");
+
+	}
+
+	public async Task GetDetails(int id) {
+
+		Items = await HttpClient.GetJsonAsync<OrderItem[]>($"/api/orders/{id}");
+
+	}
+
+
+}

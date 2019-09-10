@@ -1,0 +1,10 @@
+﻿@using SampleBlazorUI.Client.Pages
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+This is my about page
+
+@(await Html.RenderComponentAsync<Counter>(RenderMode.Static))
